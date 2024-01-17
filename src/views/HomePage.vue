@@ -1,12 +1,14 @@
 <template>
   <ion-page>
     <ion-header :translucent="true">
-      <ion-title>Time Fighter</ion-title>
-      <ion-buttons slot="primary">
-        <ion-button color="primary" fill="solid" @click="presentAlert">
-          <ion-icon slot="icon-only" :icon="alertCircle"></ion-icon>
-        </ion-button>
-      </ion-buttons>
+      <ion-toolbar>
+        <ion-buttons slot="primary">
+          <ion-button color="primary" fill="solid" @click="presentAlert">
+            <ion-icon slot="icon-only" :icon="alertCircle"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title>Time Fighter</ion-title>
+      </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
@@ -16,7 +18,8 @@
       </ion-header>
 
       <div id="container">
-        <ion-button @click="countClick">Clic Me</ion-button>
+        <ion-button id="tapMeButton" color="primary" @click="countClick">Clicam</ion-button>
+        <ion-icon v-if="showHeart" class="heart" name="heart"></ion-icon>
         <p>Temps restant: {{ timeLeft }} segons</p>
         <p>Clics: {{ clickCount }}</p>
       </div>
@@ -28,10 +31,10 @@
 <script lang="ts" setup>
 import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon} from '@ionic/vue';
 
-import {alertCircle, personCircle} from "ionicons/icons";
+import {alertCircle, helpCircle, personCircle} from "ionicons/icons";
 
 import { ref } from 'vue';
-import {alertController} from '@ionic/vue';
+import {alertController, createAnimation} from '@ionic/vue';
 const count = ref(0);
 const presentAlert = async () => {
   const alert = await alertController.create({
@@ -42,7 +45,7 @@ const presentAlert = async () => {
       {
         text: 'OK',
         handler: () => {
-          window.open('https://github.com/SergioBertomeu/Ionic_Comptador', '_blank');
+          window.open('https://github.com/SergioBertomeu/ionicComptador', '_blank');
         }
       }
     ],
@@ -52,7 +55,6 @@ const presentAlert = async () => {
 };
 const tap = async () => {
   count.value++; // Incrementar el contador
-  // ... el teu codi actual de la funció tap ...
 };
 
 
@@ -62,13 +64,24 @@ let timer: number | null = null; // Variable per al temporitzador
 let timerStarted = false; // Indicador si el temporitzador ha començat
 let initialTime = 3; // Defineix el temps inicial del comptador enrrere
 let initialClick = 0; // Defineix els clicks inicials al reinicia
+
+
+const showHeart = ref(false);
+
 const countClick = () => {
+  showHeart.value = true;
+  // Resto de tu lógica aquí...
   if (!timerStarted) {
     startCountdown(); // Començar el temporitzador si encara no ha començat
     timerStarted = true;
   }
   clickCount.value++;
+  // Opcional: Ocultar el corazón después de un tiempo
+  setTimeout(() => {
+    showHeart.value = false;
+  }, 100); // Ajusta este tiempo según necesites
 };
+
 
 const startCountdown = () => {
   timeLeft.value = initialTime; // Reiniciar el temps a l'inici
@@ -94,6 +107,27 @@ const startCountdown = () => {
 </script>
 
 <style scoped>
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.heart {
+  font-size: 50px;
+  color: red;
+  animation: pulse 1s infinite;
+}
+
+
+
 #container {
   text-align: center;
 
